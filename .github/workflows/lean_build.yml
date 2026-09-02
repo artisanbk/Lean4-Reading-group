@@ -1,7 +1,11 @@
 name: Build
 
 on:
+  # Restricted to `main` so that a branch with a PR open does not build twice,
+  # once for the push and once for the pull request. Branches without a PR do
+  # not build at all.
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -18,6 +22,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # Installs the toolchain named in `lean-toolchain`, detects the Mathlib
-      # dependency and fetches its cache, then runs `lake build`.
+      # Installs the toolchain named in `lean-toolchain`, then runs `lake build`.
       - uses: leanprover/lean-action@v1
+        with:
+          # Both of these are on by default. They are stated explicitly so the
+          # behaviour is visible here and does not drift with the defaults.
+          #
+          # `lake exe cache get`, without which a run would compile Mathlib from
+          # source. The default is `auto`, which infers it from the dependency
+          # graph. Saying `true` means a run fails loudly rather than quietly
+          # spending hours, should that detection ever stop working.
+          use-mathlib-cache: true
+          # Reuse of the GitHub Actions cache between runs.
+          use-github-cache: true
