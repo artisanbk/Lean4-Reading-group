@@ -1,5 +1,6 @@
 /- Copyright (c) Heather Macbeth, 2023.  All rights reserved. -/
 import Mathlib.Tactic.Choose
+import Mathlib.Data.Nat.Notation
 
 open Function
 
@@ -17,7 +18,7 @@ theorem bijective_iff_exists_inverse (f : X → Y) :
     constructor
     · intro x1 x2 hx
       have H : (g ∘ f) x1 = (g ∘ f) x2 := by simp [hx]
-      simpa only [hgf] using H
+      simpa only [hgf, id_eq] using H
     · intro y
       refine ⟨g y, ?_⟩
       simpa using congr_fun hfg y

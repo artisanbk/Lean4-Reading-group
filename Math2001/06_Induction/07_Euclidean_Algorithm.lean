@@ -8,15 +8,15 @@ open Int
 
 
 @[decreasing] theorem lower_bound_fmod1 (a b : ℤ) (h1 : 0 < b) : -b < fmod a b := by
-  have H : 0 ≤ fmod a b
-  · apply fmod_nonneg_of_pos
+  have H : 0 ≤ fmod a b := by
+    apply fmod_nonneg_of_pos
     apply h1
   calc -b < 0 := by addarith [h1]
     _ ≤ _ := H
 
 @[decreasing] theorem lower_bound_fmod2 (a b : ℤ) (h1 : b < 0) : b < fmod a (-b) := by
-  have H : 0 ≤ fmod a (-b)
-  · apply fmod_nonneg_of_pos
+  have H : 0 ≤ fmod a (-b) := by
+    apply fmod_nonneg_of_pos
     addarith [h1]
   have h2 : 0 < -b := by addarith [h1]
   calc b < 0 := h1
@@ -39,7 +39,7 @@ def gcd (a b : ℤ) : ℤ :=
     a
   else
     -a
-termination_by _ a b => b
+termination_by b
 
 
 #eval gcd (-21) 15 -- infoview displays `3`
@@ -47,7 +47,7 @@ termination_by _ a b => b
 
 theorem gcd_nonneg (a b : ℤ) : 0 ≤ gcd a b := by
   rw [gcd]
-  split_ifs with h1 h2 ha <;> push_neg at *
+  split_ifs with h1 h2 ha <;> try push_neg at *
   · -- case `0 < b`
     have IH := gcd_nonneg b (fmod a b) -- inductive hypothesis
     apply IH
@@ -58,12 +58,12 @@ theorem gcd_nonneg (a b : ℤ) : 0 ≤ gcd a b := by
     apply ha
   · -- case `b = 0`, `a < 0`
     addarith [ha]
-termination_by _ a b => b
+termination_by b
 
 
 theorem gcd_dvd (a b : ℤ) : gcd a b ∣ b ∧ gcd a b ∣ a := by
   rw [gcd]
-  split_ifs with h1 h2 <;> push_neg at *
+  split_ifs with h1 h2 <;> try push_neg at *
   · -- case `0 < b`
     have IH : _ ∧ _ := gcd_dvd b (fmod a b) -- inductive hypothesis
     obtain ⟨IH_right, IH_left⟩ := IH
@@ -92,13 +92,13 @@ theorem gcd_dvd (a b : ℤ) : gcd a b ∣ b ∧ gcd a b ∣ a := by
       sorry
     · -- prove that `gcd a b ∣ a`
       sorry
-termination_by gcd_dvd a b => b
+termination_by b
 
 
 mutual
 theorem gcd_dvd_right (a b : ℤ) : gcd a b ∣ b := by
   rw [gcd]
-  split_ifs with h1 h2 <;> push_neg at *
+  split_ifs with h1 h2 <;> try push_neg at *
   · -- case `0 < b`
     apply gcd_dvd_left b (fmod a b) -- inductive hypothesis
   · -- case `b < 0`
@@ -113,16 +113,17 @@ theorem gcd_dvd_right (a b : ℤ) : gcd a b ∣ b := by
     use 0
     calc b = 0 := hb
       _ = -a * 0 := by ring
+termination_by b
 
 theorem gcd_dvd_left (a b : ℤ) : gcd a b ∣ a := by
   rw [gcd]
-  split_ifs with h1 h2 <;> push_neg at *
+  split_ifs with h1 h2 <;> try push_neg at *
   · -- case `0 < b`
     have IH1 := gcd_dvd_left b (fmod a b) -- inductive hypothesis
     have IH2 := gcd_dvd_right b (fmod a b) -- inductive hypothesis
     obtain ⟨k, hk⟩ := IH1
     obtain ⟨l, hl⟩ := IH2
-    have H : fmod a b + b * fdiv a b = a := fmod_add_fdiv a b
+    have H : fmod a b + b * fdiv a b = a := fmod_add_mul_fdiv a b
     set q := fdiv a b
     set r := fmod a b
     use l + k * q
@@ -134,7 +135,7 @@ theorem gcd_dvd_left (a b : ℤ) : gcd a b ∣ a := by
     have IH2 := gcd_dvd_right b (fmod a (-b)) -- inductive hypothesis
     obtain ⟨k, hk⟩ := IH1
     obtain ⟨l, hl⟩ := IH2
-    have H := fmod_add_fdiv a (-b)
+    have H := fmod_add_mul_fdiv a (-b)
     set q := fdiv a (-b)
     set r := fmod a (-b)
     use l - k * q
@@ -147,9 +148,9 @@ theorem gcd_dvd_left (a b : ℤ) : gcd a b ∣ a := by
   · -- case `b = 0`, `a < 0`
     use -1
     ring
+termination_by b
 
 end
-termination_by gcd_dvd_right a b => b ; gcd_dvd_left a b => b
 
 
 mutual
@@ -163,6 +164,7 @@ def L (a b : ℤ) : ℤ :=
     1
   else
     -1
+termination_by b
 
 def R (a b : ℤ) : ℤ :=
   if 0 < b then
@@ -171,9 +173,9 @@ def R (a b : ℤ) : ℤ :=
     L b (fmod a (-b)) + (fdiv a (-b)) * R b (fmod a (-b))
   else
     0
+termination_by b
 
 end
-termination_by L a b => b ; R a b => b
 
 
 #eval L (-21) 15 -- infoview displays `2`
@@ -182,10 +184,10 @@ termination_by L a b => b ; R a b => b
 
 theorem L_mul_add_R_mul (a b : ℤ) : L a b * a + R a b * b = gcd a b := by
   rw [R, L, gcd]
-  split_ifs with h1 h2 <;> push_neg at *
+  split_ifs with h1 h2 <;> try push_neg at *
   · -- case `0 < b`
     have IH := L_mul_add_R_mul b (fmod a b) -- inductive hypothesis
-    have H : fmod a b + b * fdiv a b = a := fmod_add_fdiv a b
+    have H : fmod a b + b * fdiv a b = a := fmod_add_mul_fdiv a b
     set q := fdiv a b
     set r := fmod a b
     calc R b r * a + (L b r - q * R b r) * b
@@ -194,7 +196,7 @@ theorem L_mul_add_R_mul (a b : ℤ) : L a b * a + R a b * b = gcd a b := by
       _ = gcd b r := IH
   · -- case `b < 0`
     have IH := L_mul_add_R_mul b (fmod a (-b)) -- inductive hypothesis
-    have H : fmod a (-b) + (-b) * fdiv a (-b) = a := fmod_add_fdiv a (-b)
+    have H : fmod a (-b) + (-b) * fdiv a (-b) = a := fmod_add_mul_fdiv a (-b)
     set q := fdiv a (-b)
     set r := fmod a (-b)
     calc  R b r * a + (L b r + q * R b r) * b
@@ -205,7 +207,7 @@ theorem L_mul_add_R_mul (a b : ℤ) : L a b * a + R a b * b = gcd a b := by
     ring
   · -- case `b = 0`, `a < 0`
     ring
-termination_by L_mul_add_R_mul a b => b
+termination_by b
 
 
 #eval L 7 5 -- infoview displays `-2`

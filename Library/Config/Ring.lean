@@ -6,4 +6,7 @@ import Mathlib.Tactic.Ring
 nonterminal use. -/
 
 macro_rules | `(conv | ring) => `(conv | ring_nf)
-macro "ring" : tactic => `(tactic | first | (ring_nf; done) | ring1)
+-- Written with `macro_rules` against the existing syntax rather than as a fresh `macro`.
+-- Mathlib now declares `ring` as `macro (name := ring) "ring" : tactic`, and a second parser of
+-- the same shape for the same token leaves the two ambiguous, which surfaces as `unknown tactic`.
+macro_rules | `(tactic | ring) => `(tactic | first | (ring_nf; done) | ring1)

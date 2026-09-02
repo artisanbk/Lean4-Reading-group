@@ -14,7 +14,16 @@ def fmod (n d : ℤ) : ℤ :=
     0
   else
     n
-termination_by _ n d => 2 * n - d
+termination_by 2 * n - d
+decreasing_by
+  · rw [Int.sizeOf_lt_sizeOf_iff, abs_lt_abs_iff]
+    rcases mul_neg_iff.mp ‹n * d < 0› with ⟨hn, hd⟩ | ⟨hn, hd⟩
+    · left; constructor <;> omega
+    · right; constructor <;> omega
+  · rw [Int.sizeOf_lt_sizeOf_iff, abs_lt_abs_iff]
+    rcases mul_pos_iff.mp ‹(0 : ℤ) < d * (n - d)› with ⟨hd, hn⟩ | ⟨hd, hn⟩
+    · left; constructor <;> omega
+    · right; constructor <;> omega
 
 def fdiv (n d : ℤ) : ℤ :=
   if n * d < 0 then
@@ -25,7 +34,16 @@ def fdiv (n d : ℤ) : ℤ :=
     1
   else
     0
-termination_by _ n d => 2 * n - d
+termination_by 2 * n - d
+decreasing_by
+  · rw [Int.sizeOf_lt_sizeOf_iff, abs_lt_abs_iff]
+    rcases mul_neg_iff.mp ‹n * d < 0› with ⟨hn, hd⟩ | ⟨hn, hd⟩
+    · left; constructor <;> omega
+    · right; constructor <;> omega
+  · rw [Int.sizeOf_lt_sizeOf_iff, abs_lt_abs_iff]
+    rcases mul_pos_iff.mp ‹(0 : ℤ) < d * (n - d)› with ⟨hd, hn⟩ | ⟨hd, hn⟩
+    · left; constructor <;> omega
+    · right; constructor <;> omega
 
 
 #eval fmod 11 4 -- infoview displays `3`
@@ -34,7 +52,7 @@ termination_by _ n d => 2 * n - d
 
 theorem fmod_add_fdiv (n d : ℤ) : fmod n d + d * fdiv n d = n := by
   rw [fdiv, fmod]
-  split_ifs with h1 h2 h3 <;> push_neg at *
+  split_ifs with h1 h2 h3 <;> try push_neg at *
   · -- case `n * d < 0`
     have IH := fmod_add_fdiv (n + d) d -- inductive hypothesis
     calc fmod (n + d) d + d * (fdiv (n + d) d - 1)
@@ -51,13 +69,21 @@ theorem fmod_add_fdiv (n d : ℤ) : fmod n d + d * fdiv n d = n := by
       _ = n := by rw [h3]
   · -- last case
     ring
-termination_by _ n d => 2 * n - d
-
+termination_by 2 * n - d
+decreasing_by
+  · rw [Int.sizeOf_lt_sizeOf_iff, abs_lt_abs_iff]
+    rcases mul_neg_iff.mp ‹n * d < 0› with ⟨hn, hd'⟩ | ⟨hn, hd'⟩
+    · left; constructor <;> omega
+    · right; constructor <;> omega
+  · rw [Int.sizeOf_lt_sizeOf_iff, abs_lt_abs_iff]
+    rcases mul_pos_iff.mp ‹(0 : ℤ) < d * (n - d)› with ⟨hd', hn⟩ | ⟨hd', hn⟩
+    · left; constructor <;> omega
+    · right; constructor <;> omega
 
 
 theorem fmod_nonneg_of_pos (n : ℤ) {d : ℤ} (hd : 0 < d) : 0 ≤ fmod n d := by
   rw [fmod]
-  split_ifs with h1 h2 h3 <;> push_neg at *
+  split_ifs with h1 h2 h3 <;> try push_neg at *
   · -- case `n * d < 0`
     have IH := fmod_nonneg_of_pos (n + d) hd -- inductive hypothesis
     apply IH
@@ -68,12 +94,21 @@ theorem fmod_nonneg_of_pos (n : ℤ) {d : ℤ} (hd : 0 < d) : 0 ≤ fmod n d := 
     extra
   · -- last case
     cancel d at h1
-termination_by _ n d hd => 2 * n - d
+termination_by 2 * n - d
+decreasing_by
+  · rw [Int.sizeOf_lt_sizeOf_iff, abs_lt_abs_iff]
+    rcases mul_neg_iff.mp ‹n * d < 0› with ⟨hn, hd'⟩ | ⟨hn, hd'⟩
+    · left; constructor <;> omega
+    · right; constructor <;> omega
+  · rw [Int.sizeOf_lt_sizeOf_iff, abs_lt_abs_iff]
+    rcases mul_pos_iff.mp ‹(0 : ℤ) < d * (n - d)› with ⟨hd', hn⟩ | ⟨hd', hn⟩
+    · left; constructor <;> omega
+    · right; constructor <;> omega
 
 
 theorem fmod_lt_of_pos (n : ℤ) {d : ℤ} (hd : 0 < d) : fmod n d < d := by
   rw [fmod]
-  split_ifs with h1 h2 h3 <;> push_neg at *
+  split_ifs with h1 h2 h3 <;> try push_neg at *
   · -- case `n * d < 0`
     have IH := fmod_lt_of_pos (n + d) hd -- inductive hypothesis
     apply IH
@@ -90,7 +125,16 @@ theorem fmod_lt_of_pos (n : ℤ) {d : ℤ} (hd : 0 < d) : fmod n d < d := by
     apply lt_of_le_of_ne
     · addarith [h4]
     · apply h3
-termination_by _ n d hd => 2 * n - d
+termination_by 2 * n - d
+decreasing_by
+  · rw [Int.sizeOf_lt_sizeOf_iff, abs_lt_abs_iff]
+    rcases mul_neg_iff.mp ‹n * d < 0› with ⟨hn, hd'⟩ | ⟨hn, hd'⟩
+    · left; constructor <;> omega
+    · right; constructor <;> omega
+  · rw [Int.sizeOf_lt_sizeOf_iff, abs_lt_abs_iff]
+    rcases mul_pos_iff.mp ‹(0 : ℤ) < d * (n - d)› with ⟨hd', hn⟩ | ⟨hd', hn⟩
+    · left; constructor <;> omega
+    · right; constructor <;> omega
 
 
 example (a b : ℤ) (h : 0 < b) : ∃ r : ℤ, 0 ≤ r ∧ r < b ∧ a ≡ r [ZMOD b] := by
@@ -116,7 +160,9 @@ def T (n : ℤ) : ℤ :=
     T (-n)
   else
     0
-termination_by T n => 3 * n - 1
+termination_by 3 * n - 1
+decreasing_by
+  all_goals (simp_wf; rw [Int.sizeOf_lt_sizeOf_iff, abs_lt_abs_iff]; omega)
 
 theorem T_eq (n : ℤ) : T n = n ^ 2 := by
   sorry
