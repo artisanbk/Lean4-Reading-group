@@ -1,5 +1,7 @@
 /- Copyright (c) Heather Macbeth, 2023.  All rights reserved. -/
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Algebra.Order.GroupWithZero.Basic
 import Mathlib.Tactic.Positivity
 
 open Lean
@@ -16,15 +18,15 @@ macro_rules
 macro_rules
 | `(tactic| cancel_aux $a at $h) =>
   let h := h.raw.getId
-  `(tactic | replace $(mkIdent h):ident := lt_of_pow_lt_pow (n := $a) (by cancel_discharger) $(mkIdent h))
+  `(tactic | replace $(mkIdent h):ident := lt_of_pow_lt_pow_left₀ $a (by cancel_discharger) $(mkIdent h))
+macro_rules
+| `(tactic| cancel_aux $_ at $h) =>
+  let h := h.raw.getId
+  `(tactic | replace $(mkIdent h):ident := le_of_pow_le_pow_left₀ (hn := by cancel_discharger) (hb := by cancel_discharger) $(mkIdent h))
 macro_rules
 | `(tactic| cancel_aux $a at $h) =>
   let h := h.raw.getId
-  `(tactic | replace $(mkIdent h):ident := le_of_pow_le_pow (n := $a) (by cancel_discharger) (by cancel_discharger) $(mkIdent h))
-macro_rules
-| `(tactic| cancel_aux $a at $h) =>
-  let h := h.raw.getId
-  `(tactic | replace $(mkIdent h):ident := pow_eq_zero (n := $a) $(mkIdent h))
+  `(tactic | replace $(mkIdent h):ident := eq_zero_of_pow_eq_zero (n := $a) $(mkIdent h))
 
 
 /-! ### multiplication, LHS and RHS -/

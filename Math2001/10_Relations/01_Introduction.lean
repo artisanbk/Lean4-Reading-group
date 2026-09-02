@@ -6,15 +6,20 @@ import Library.Tactic.ModEq
 
 math2001_init
 
+/- The notation below differs slightly from the book.  The book writes relations as `((·:ℕ) ∣ ·)`,
+but the closing parenthesis of `(·:ℕ)` now ends the lambda, so that term means `((fun x => x) : ℕ)`
+and no longer typechecks as a relation.  These examples ascribe the relation as a whole instead,
+as in `((· ∣ ·) : ℕ → ℕ → Prop)`.  It is the same relation, spelled a way current Lean accepts. -/
 
-example : Reflexive ((·:ℕ) ∣ ·) := by
+
+example : Reflexive ((· ∣ ·) : ℕ → ℕ → Prop) := by
   dsimp [Reflexive]
   intro x
   use 1
   ring
 
 
-example : ¬ Symmetric ((·:ℕ) ∣ ·) := by
+example : ¬ Symmetric ((· ∣ ·) : ℕ → ℕ → Prop) := by
   dsimp [Symmetric]
   push_neg
   use 1, 2
@@ -28,7 +33,7 @@ example : ¬ Symmetric ((·:ℕ) ∣ ·) := by
     · numbers
 
 
-example : AntiSymmetric ((·:ℕ) ∣ ·) := by
+example : AntiSymmetric ((· ∣ ·) : ℕ → ℕ → Prop) := by
   have H : ∀ {m n}, m = 0 → m ∣ n → m = n
   · intro m n h1 h2
     obtain ⟨k, hk⟩ := h2
@@ -48,7 +53,7 @@ example : AntiSymmetric ((·:ℕ) ∣ ·) := by
   · apply Nat.le_of_dvd hx h2
 
 
-example : Transitive ((·:ℕ) ∣ ·) := by
+example : Transitive ((· ∣ ·) : ℕ → ℕ → Prop) := by
   dsimp [Transitive]
   intro a b c hab hbc
   obtain ⟨k, hk⟩ := hab
@@ -59,22 +64,22 @@ example : Transitive ((·:ℕ) ∣ ·) := by
     _ = a * (k * l) := by ring
 
 
-example : Reflexive ((·:ℝ) = ·) := by
+example : Reflexive ((· = ·) : ℝ → ℝ → Prop) := by
   dsimp [Reflexive]
   intro x
   ring
 
-example : Symmetric ((·:ℝ) = ·) := by
+example : Symmetric ((· = ·) : ℝ → ℝ → Prop) := by
   dsimp [Symmetric]
   intro x y h
   rw [h]
 
-example : AntiSymmetric ((·:ℝ) = ·) := by
+example : AntiSymmetric ((· = ·) : ℝ → ℝ → Prop) := by
   dsimp [AntiSymmetric]
   intro x y h1 h2
   rw [h1]
 
-example : Transitive ((·:ℝ) = ·) := by
+example : Transitive ((· = ·) : ℝ → ℝ → Prop) := by
   dsimp [Transitive]
   intro x y z h1 h2
   rw [h1, h2]
@@ -170,7 +175,7 @@ end
 /-! # Exercises -/
 
 
-example : ¬ Symmetric ((·:ℝ) < ·) := by
+example : ¬ Symmetric ((· < ·) : ℝ → ℝ → Prop) := by
   sorry
 
 section
@@ -300,28 +305,28 @@ example : ¬ Transitive (· ∼ ·) := by
 end
 
 
-example : Reflexive ((· : Set ℕ) ⊆ ·) := by
+example : Reflexive ((· ⊆ ·) : Set ℕ → Set ℕ → Prop) := by
   sorry
 
-example : ¬ Reflexive ((· : Set ℕ) ⊆ ·) := by
+example : ¬ Reflexive ((· ⊆ ·) : Set ℕ → Set ℕ → Prop) := by
   sorry
 
-example : Symmetric ((· : Set ℕ) ⊆ ·) := by
+example : Symmetric ((· ⊆ ·) : Set ℕ → Set ℕ → Prop) := by
   sorry
 
-example : ¬ Symmetric ((· : Set ℕ) ⊆ ·) := by
+example : ¬ Symmetric ((· ⊆ ·) : Set ℕ → Set ℕ → Prop) := by
   sorry
 
-example : AntiSymmetric ((· : Set ℕ) ⊆ ·) := by
+example : AntiSymmetric ((· ⊆ ·) : Set ℕ → Set ℕ → Prop) := by
   sorry
 
-example : ¬ AntiSymmetric ((· : Set ℕ) ⊆ ·) := by
+example : ¬ AntiSymmetric ((· ⊆ ·) : Set ℕ → Set ℕ → Prop) := by
   sorry
 
-example : Transitive ((· : Set ℕ) ⊆ ·) := by
+example : Transitive ((· ⊆ ·) : Set ℕ → Set ℕ → Prop) := by
   sorry
 
-example : ¬ Transitive ((· : Set ℕ) ⊆ ·) := by
+example : ¬ Transitive ((· ⊆ ·) : Set ℕ → Set ℕ → Prop) := by
   sorry
 
 

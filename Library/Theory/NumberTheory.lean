@@ -1,5 +1,7 @@
 /- Copyright (c) Heather Macbeth, 2023.  All rights reserved. -/
 import Library.Theory.Parity
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Tactic.Cases
 
 /-! # Assorted number theory lemmas from earlier needed in section 7.3 (square root of 2) -/
 
@@ -16,7 +18,6 @@ theorem sq_ne_two (n : ℤ) : n ^ 2 ≠ 2 := by
 theorem Nat.Odd.pow {a : ℕ} (ha : Nat.Odd a) (n : ℕ) : Nat.Odd (a ^ n) := by
   induction' n with k IH
   · use 0
-    change a ^ 0 = _
     ring
   · obtain ⟨x, hx⟩ := ha
     obtain ⟨y, hy⟩ := IH

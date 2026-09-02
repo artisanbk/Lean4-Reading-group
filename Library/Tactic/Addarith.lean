@@ -26,7 +26,9 @@ open Mathlib Tactic Abel
 
 def addarithDischarger : TacticM Unit := do
   try evalTactic (← `(tactic| simp (config := { decide := false }) only [one_mul, neg_mul])) catch _ => pure ()
-  abelNFTarget (← IO.mkRef {}) {}
+  -- Was `abelNFTarget`, which Mathlib no longer exposes.  `abel_nf` reports an error when it
+  -- changes nothing, hence the `try` that the neighbouring steps also use.
+  try evalTactic (← `(tactic| abel_nf)) catch _ => pure ()
   try evalTactic (← `(tactic| push_cast (config := { decide := false }) [zsmul_eq_mul])) catch _ => pure ()
   try evalTactic (← `(tactic| norm_num1)) catch _ => pure ()
 

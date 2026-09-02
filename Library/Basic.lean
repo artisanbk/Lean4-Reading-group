@@ -1,6 +1,7 @@
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Set
+import Mathlib.Tactic.Push
 import Library.Config.Constructor
 import Library.Config.Contradiction
 import Library.Config.ExistsDelaborator
@@ -21,10 +22,26 @@ import Library.Tactic.TruthTable
 
 notation3 (prettyPrint := false) "forall_sufficiently_large "(...)", "r:(scoped P => ∃ C, ∀ x ≥ C, P x) => r
 
-macro "linarith" linarithArgsRest : tactic => `(tactic | fail "linarith tactic disabled")
-macro "nlinarith" linarithArgsRest : tactic => `(tactic | fail "nlinarith tactic disabled")
-macro "linarith!" linarithArgsRest : tactic => `(tactic | fail "linarith! tactic disabled")
-macro "nlinarith!" linarithArgsRest : tactic => `(tactic | fail "nlinarith! tactic disabled")
+/-! ### `push_neg`
+
+Mathlib deprecated the `push_neg` tactic in favour of `push Not`, and removed the `#push_neg`
+command in favour of `#push Not => e`.  *The Mechanics of Proof* teaches the `push_neg` spelling
+throughout chapter 5, so we keep it available here.  Both are exact aliases rather than weakened
+stand-ins.  The tactic is verbatim the implementation Mathlib recommends in its own deprecation
+message for projects that want to keep the name, and `#push_neg e` is by definition
+`#push Not => e`.
+-/
+
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+
+macro "#push_neg " e:term : command => `(command| #push Not => $e)
+
+macro "linarith" Mathlib.Tactic.linarithArgsRest : tactic => `(tactic | fail "linarith tactic disabled")
+macro "nlinarith" Mathlib.Tactic.linarithArgsRest : tactic => `(tactic | fail "nlinarith tactic disabled")
+macro "linarith!" Mathlib.Tactic.linarithArgsRest : tactic => `(tactic | fail "linarith! tactic disabled")
+macro "nlinarith!" Mathlib.Tactic.linarithArgsRest : tactic => `(tactic | fail "nlinarith! tactic disabled")
 macro "polyrith" : tactic => `(tactic | fail "polyrith tactic disabled")
 macro "decide" : tactic => `(tactic | fail "decide tactic disabled")
 macro "aesop" : tactic => `(tactic | fail "aesop tactic disabled")
@@ -42,6 +59,7 @@ Tries to perform essentially the following:
 
 ```
 set_option push_neg.use_distrib true
+set_option linter.deprecated false
 
 attribute [-simp] ne_eq
 attribute [-ext] Prod.ext
@@ -52,7 +70,14 @@ attribute [-norm_num] Mathlib.Meta.NormNum.evalNatDvd
 -/
 elab "math2001_init" : command => do
   trySetOptions #[
-    ⟨`push_neg.use_distrib, true⟩
+    ⟨`push_neg.use_distrib, true⟩,
+    -- `Reflexive`/`Symmetric`/`AntiSymmetric`/`Transitive` are deprecated upstream but still
+    -- work, and chapter 10 is built on them.  They are plain definitions, which is what makes
+    -- `dsimp [Reflexive]` the method of that chapter.  Their replacements (`Std.Refl`,
+    -- `IsTrans`, ...) are type classes, which cannot be unfolded that way, so we silence the
+    -- linter rather than diverge from the text.  This reaches the course files only, since
+    -- `Library` never calls `math2001_init`.  PORTING.md has the full reasoning.
+    ⟨`linter.deprecated, false⟩
   ]
   tryEraseAttrs #[
     ⟨`simp, #[`ne_eq]⟩,

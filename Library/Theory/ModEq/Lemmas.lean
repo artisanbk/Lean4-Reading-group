@@ -57,8 +57,12 @@ h.mul (Int.ModEq.refl _)
 @[gcongr]
 protected theorem Int.ModEq.pow (k : ℕ) (h : a ≡ b [ZMOD n]) : a ^ k ≡ b ^ k [ZMOD n] := by
   induction k
-  case zero => exact Int.ModEq.refl _
-  case succ k hk => exact Int.ModEq.mul hk h
+  case zero =>
+    rw [pow_zero, pow_zero]
+    exact Int.ModEq.refl _
+  case succ k hk =>
+    rw [pow_succ, pow_succ]
+    exact Int.ModEq.mul hk h
 
 @[symm]
 protected theorem Int.ModEq.symm (h : a ≡ b [ZMOD n]) : b ≡ a [ZMOD n] := by
