@@ -23,10 +23,14 @@ example {a b : ℚ} (h1 : a - b = 4) (h2 : a * b = 1) : (a + b) ^ 2 = 20 :=
 -- Exercise: replace the words "sorry" with the correct Lean justification.
 example {r s : ℝ} (h1 : s = 3) (h2 : r + 2 * s = -1) : r = -7 :=
   calc
-    r = r + 2 * s - 2 * s := by sorry
-    _ = -1 - 2 * s := by sorry
-    _ = -1 - 2 * 3 := by sorry
-    _ = -7 := by sorry
+    r = r + 2 * s - 2 * s := by
+      ring
+    _ = -1 - 2 * s := by
+      rw[h2]
+    _ = -1 - 2 * 3 := by
+      rw[h1]
+    _ = -7 := by
+      ring
 
 -- Example 1.2.3
 -- Exercise: replace the words "sorry" with the correct Lean justification.
